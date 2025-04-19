@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Calculator</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="center-container">
+        <h2>Calculator</h2>
+        <input type="number" id="operand1" placeholder="Operand 1"><br>
+        <input type="number" id="operand2" placeholder="Operand 2"><br>
+        <select id="operation">
+            <option value="add">Addition</option>
+            <option value="sub">Subtraction</option>
+            <option value="mul">Multiplication</option>
+            <option value="div">Division</option>
+        </select><br><br>
+        <button onclick="calculate()">Calculate</button><br><br>
+        <p id="calc-result"></p>
+        <button onclick="location.href='dashboard.html'">Back to Dashboard</button><br><br>
+        <button onclick="location.href='home.html'">Home</button>
+    </div>
+
+    <script>
+        function calculate() {
+            const operand1 = parseFloat(document.getElementById("operand1").value);
+            const operand2 = parseFloat(document.getElementById("operand2").value);
+            const operation = document.getElementById("operation").value;
+            const username = localStorage.getItem("username");
+            const password = localStorage.getItem("password");
+
+            fetch("/calculate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password, operand1, operand2, operation })
+            })
+            .then(res => res.json().then(data => ({ status: res.status, body: data })))
+            .then(({ status, body }) => {
+                document.getElementById("calc-result").innerText = 
+                    status === 200 ? `Result: ${body.result}` : body.message;
+            });
+        }
+    </script>
+</body>
+</html>
