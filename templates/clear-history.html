@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clear History</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="center-container">
+        <h2>Clear Calculation History</h2>
+        <input type="text" id="username" placeholder="Enter Username" required><br>
+        <input type="password" id="password" placeholder="Enter Password" required><br><br>
+        <button onclick="clearHistory()">Clear History</button><br><br>
+        <div id="message"></div><br>
+        <button onclick="location.href='dashboard.html'">Back to Dashboard</button><br><br>
+        <button onclick="location.href='home.html'">Home</button>
+    </div>
+
+    <script>
+        function clearHistory() {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            if (!username || !password) {
+                alert("Please enter both username and password");
+                return;
+            }
+
+            fetch("/clear-history", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password })
+            })
+            .then(res => res.json().then(data => ({ status: res.status, body: data })))
+            .then(({ status, body }) => {
+                const msgBox = document.getElementById("message");
+                msgBox.innerText = body.message;
+                msgBox.style.color = status === 200 ? "green" : "red";
+            });
+        }
+    </script>
+</body>
+</html>
