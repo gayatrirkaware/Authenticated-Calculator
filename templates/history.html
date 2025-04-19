@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>View History</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="center-container">
+        <h2>View Calculation History</h2>
+        <input type="text" id="username" placeholder="Enter Username" required><br>
+        <input type="password" id="password" placeholder="Enter Password" required><br><br>
+        <button onclick="fetchHistory()">Fetch History</button><br><br>
+        <div id="history"></div>
+        <br>
+        <button onclick="location.href='dashboard.html'">Back to Dashboard</button><br><br>
+        <button onclick="location.href='home.html'">Home</button>
+    </div>
+
+    <script>
+        function fetchHistory() {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            if (!username || !password) {
+                alert("Please enter both username and password");
+                return;
+            }
+
+            fetch("/history", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password })
+            })
+            .then(res => res.json().then(data => ({ status: res.status, body: data })))
+            .then(({ status, body }) => {
+                const historyContainer = document.getElementById("history");
+                if (status === 200 && body.length > 0) {
+                    historyContainer.innerHTML = body.map(entry => `
+                        <p>
+                            ${entry.timestamp} → ${entry.operand1} ${entry.operation} ${entry.operand2} = ${entry.result}
+                        </p>`).join("");
+                } else {
+                    historyContainer.innerText = body.message || "No history found.";
+                }
+            });
+        }
+    </script>
+</body>
+</html>
