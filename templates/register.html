@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="center-container">
+        <h2>Register</h2>
+        <input type="text" id="reg-username" placeholder="Username" required><br>
+        <input type="password" id="reg-password" placeholder="Password" required><br>
+        <button onclick="register()">Register</button><br><br>
+        <a href="login.html">Already have an account? Login</a><br>
+        <a href="home.html">Home</a>
+    </div>
+
+    <script>
+        function register() {
+            const username = document.getElementById("reg-username").value;
+            const password = document.getElementById("reg-password").value;
+
+            fetch("/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password })
+            })
+            .then(res => res.json().then(data => ({ status: res.status, body: data })))
+            .then(({ status, body }) => {
+                alert(body.message);
+                if (status === 201) {
+                    window.location.href = "login.html"; // 👈 Redirect to login
+                }
+            });
+        }
+    </script>
+</body>
+</html>
